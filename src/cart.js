@@ -2,11 +2,64 @@ function notImplemented() {
   throw new Error('Корзина ещё не реализована. Сначала прочитайте тесты.');
 }
 
-function addToCart() { return notImplemented(); }
-function changeQuantity() { return notImplemented(); }
-function removeFromCart() { return notImplemented(); }
-function calculateCartSubtotal() { return notImplemented(); }
-function calculateOrderTotal() { return notImplemented(); }
+const minAmountError = new RangeError('Количество товаров должно быть больше 0.');
+const maxAmountError = new RangeError('Выбранное количество недоступно для заказа!');
+
+function addToCart(arr, product, amount) {
+  const cart = [...arr];
+  const foundProduct = cart.find(item => item.id === product.id);
+
+  if (amount < 1) throw minAmountError;
+  if (amount > product.stock) throw maxAmountError;
+  if (foundProduct?.quantity >= foundProduct?.stock) throw maxAmountError;
+  
+  if (!foundProduct) {
+    cart.push({...product, quantity: amount });
+  } else {
+    foundProduct.quantity += amount;
+  }
+  
+  return cart;
+}
+
+function changeQuantity(arr, id, amount) {
+  const cart = [...arr];
+  const currentProduct = cart.find(item => item.id === id);
+
+  if (!currentProduct) return cart;
+  if (amount < 1) throw minAmountError;
+  if (amount > currentProduct.stock) throw maxAmountError;
+  
+  currentProduct.quantity = amount;
+  return cart; 
+}
+
+function removeFromCart(arr, id) { 
+  const cart = arr.filter(item => item.id !== id);
+  return cart;
+}
+
+function calculateCartSubtotal(arr) { 
+  let subtotal = 0;
+  if (arr.length < 1) return 0;
+  arr.forEach(item => subtotal += item.price * item.quantity);
+  return subtotal;
+}
+
+function calculateOrderTotal(arr, promo = '') { 
+  const subtotal = calculateCartSubtotal(arr);
+  const discount = promo.includes('SAVE10') && subtotal > 20000 ? subtotal * 0.1 : 0;
+  const delivery = subtotal >= 50000 ? 0 : 30000;
+
+  const totalPrice = {
+    "subtotal": subtotal, 
+    "discount": discount, 
+    "delivery": delivery,
+    "total": subtotal - discount + delivery,
+  };
+
+  return totalPrice;
+}
 
 const cartApi = { addToCart, changeQuantity, removeFromCart, calculateCartSubtotal, calculateOrderTotal };
 
