@@ -2,11 +2,12 @@ function notImplemented() {
   throw new Error('Корзина ещё не реализована. Сначала прочитайте тесты.');
 }
 
+const minAmountError = new RangeError('Количество товаров должно быть больше 0.');
+const maxAmountError = new RangeError('Выбранное количество недоступно для заказа!');
+
 function addToCart(arr, product, amount) {
   const cart = [...arr];
   const foundProduct = cart.find(item => item.id === product.id);
-  const minAmountError = new RangeError('Количество товаров должно быть больше 0.');
-  const maxAmountError = new RangeError('Выбранное количество недоступно для заказа!');
 
   if (amount < 1) throw minAmountError;
   if (amount > product.stock) throw maxAmountError;
@@ -21,7 +22,18 @@ function addToCart(arr, product, amount) {
   return cart;
 }
 
-function changeQuantity() { return notImplemented(); }
+function changeQuantity(arr, id, amount) {
+  const cart = [...arr];
+  const currentProduct = cart.find(item => item.id === id);
+  
+  if (!currentProduct) return cart;
+  if (amount < 1) throw minAmountError;
+  if (amount > currentProduct.stock) throw maxAmountError;
+  
+  currentProduct.quantity = amount;
+  return cart; 
+}
+
 function removeFromCart() { return notImplemented(); }
 function calculateCartSubtotal() { return notImplemented(); }
 function calculateOrderTotal() { return notImplemented(); }
