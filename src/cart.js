@@ -25,7 +25,7 @@ function addToCart(arr, product, amount) {
 function changeQuantity(arr, id, amount) {
   const cart = [...arr];
   const currentProduct = cart.find(item => item.id === id);
-  
+
   if (!currentProduct) return cart;
   if (amount < 1) throw minAmountError;
   if (amount > currentProduct.stock) throw maxAmountError;
@@ -34,7 +34,11 @@ function changeQuantity(arr, id, amount) {
   return cart; 
 }
 
-function removeFromCart() { return notImplemented(); }
+function removeFromCart(arr, id) { 
+  const cart = arr.filter(item => item.id !== id);
+  return cart;
+}
+
 function calculateCartSubtotal() { return notImplemented(); }
 function calculateOrderTotal() { return notImplemented(); }
 
